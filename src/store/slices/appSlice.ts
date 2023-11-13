@@ -3,6 +3,7 @@ import { config } from "@/utils/config";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { setAddonCategories } from "./addonCategorySlice";
 import { setAddons } from "./addonSlice";
+import { setDisabledLocationMenuCategories } from "./disableLocationMenucategorySlice";
 import { setLocations } from "./locationSlice";
 import { setMenuAddonCategory } from "./menuAddonCategorySlice";
 import { setMenuCategoryMenu } from "./menuCategoryMenuSlice";
@@ -26,6 +27,7 @@ export const fetchAppData = createAsyncThunk(
       const {
         locations,
         menuCategories,
+        disabledLocationMenuCategories,
         menuCategoryMenus,
         menus,
         menuAddonCategories,
@@ -37,6 +39,9 @@ export const fetchAppData = createAsyncThunk(
       thunkApi.dispatch(setInit(true));
       thunkApi.dispatch(setLocations(locations));
       thunkApi.dispatch(setMenuCategories(menuCategories));
+      thunkApi.dispatch(
+        setDisabledLocationMenuCategories(disabledLocationMenuCategories)
+      );
       thunkApi.dispatch(setMenuCategoryMenu(menuCategoryMenus));
       thunkApi.dispatch(setMenuAddonCategory(menuAddonCategories));
       thunkApi.dispatch(setMenus(menus));

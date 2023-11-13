@@ -4,6 +4,7 @@ import {
   updateMenuCategory,
 } from "@/store/slices/menuCategorySlice";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
+import { UpdateMenuCategoryOptions } from "@/types/menuCategory";
 import {
   Box,
   Button,
@@ -11,34 +12,57 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
+  FormControlLabel,
+  Switch,
   TextField,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Menu() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const menuCategoryId = Number(router.query.id);
-  const [data, setData] = useState("");
+  const [data, setData] = useState<UpdateMenuCategoryOptions>();
   const [open, setOpen] = useState<boolean>(false);
+
+  const disabledLocationMenuCategories = useAppSelector(
+    (store) => store.disabledLocationMenuCategory.items
+  );
+
+  const locationId = 1; // Number(localStorage.getItem("selectedLocationId"));
 
   const menuCategories = useAppSelector((store) => store.menuCategory.items);
   const currentMenuCategory = menuCategories.find(
     (menuCategory) => menuCategory.id === menuCategoryId
   );
 
-  if (!currentMenuCategory) return null;
+  useEffect(() => {
+    if (currentMenuCategory) {
+      const disabledLocationMenuCategory = disabledLocationMenuCategories.find(
+        (item) =>
+          item.LocationId === locationId &&
+          item.menuCategoryId === menuCategoryId
+      );
+      setData({
+        ...currentMenuCategory,
+        locationId,
+        isAvailable: disabledLocationMenuCategory ? false : true,
+      });
+    }
+  }, [currentMenuCategory, disabledLocationMenuCategories]);
+
+  if (!currentMenuCategory || !data) return null;
 
   const handleUpdateMenu = () => {
     dispatch(
       updateMenuCategory({
-        id: menuCategoryId,
-        newMenuCategoryname: data,
+        ...data,
+
         onSuccess: () => {
           dispatch(
             setOpenSnackbar({
-              message: "MenuCategory Updated succcessfully.",
+              message: "Menu Cateogry Updated succcessfully.",
               severity: "success",
               open: true,
               autoHideDuration: 3000,
@@ -76,10 +100,19 @@ export default function Menu() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <TextField
-        onChange={(evt) => setData(evt.target.value)}
+        onChange={(evt) => setData({ ...data, name: evt.target.value })}
         defaultValue={currentMenuCategory.name}
         sx={{ mb: 2 }}
       ></TextField>
+      <FormControlLabel
+        control={
+          <Switch
+            defaultChecked={data.isAvailable}
+            onChange={(evt, value) => setData({ ...data, isAvailable: value })}
+          />
+        }
+        label="Available"
+      />
 
       <Box sx={{ display: "flex" }}>
         <Button

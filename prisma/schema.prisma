@@ -161,6 +161,7 @@ model OrderLine {
 model Table {
   id         Int      @id @default(autoincrement())
   name       String
+  assetUrl   String
   location   Location @relation(fields: [locationId], references: [id])
   locationId Int
   isArchived Boolean  @default(false)

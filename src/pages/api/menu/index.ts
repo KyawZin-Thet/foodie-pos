@@ -15,10 +15,13 @@ export default async function handler(
   //create Menu
 
   if (method === "POST") {
-    const { name, price, menuCategoryIds } = req.body;
+    const { name, price, assetUrl, menuCategoryIds } = req.body;
+
     const isValid = name && price !== undefined && menuCategoryIds.length > 0;
     if (!isValid) return res.status(400).send("bad request");
-    const createdMenu = await prisma.menu.create({ data: { name, price } });
+    const createdMenu = await prisma.menu.create({
+      data: { name, price, assetUrl },
+    });
     const newMenuCategoryMenu: { menuCategoryId: number; menuId: number }[] =
       menuCategoryIds.map((item: number) => ({
         menuCategoryId: item,
