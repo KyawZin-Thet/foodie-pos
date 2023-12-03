@@ -17,7 +17,7 @@ const disabledLocationMenuCategorySlice = createSlice({
       state.items = action.payload;
     },
     addDisabledLocationMenuCategory: (state, action) => {
-      state.items = [...state.items, action.payload];
+      state.items = [...state.items, ...action.payload];
     },
     removeDisalbedLocationmenuCategory: (
       state,

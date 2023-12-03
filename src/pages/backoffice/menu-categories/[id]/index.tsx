@@ -54,7 +54,7 @@ export default function Menu() {
 
   if (!currentMenuCategory || !data) return null;
 
-  const handleUpdateMenu = () => {
+  const handleUpdateMenuCateogry = () => {
     dispatch(
       updateMenuCategory({
         ...data,
@@ -126,7 +126,7 @@ export default function Menu() {
         <Button
           variant="contained"
           sx={{ m: 2, width: "fit-content" }}
-          onClick={handleUpdateMenu}
+          onClick={handleUpdateMenuCateogry}
         >
           Update
         </Button>

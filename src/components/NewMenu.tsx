@@ -1,8 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
-import { createNewMenu } from "@/store/slices/menuSlice";
+import { createNewMenu, setLoadingMenu } from "@/store/slices/menuSlice";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
+
 import { CreateMenuOptions } from "@/types/menu";
 import { config } from "@/utils/config";
+import SaveIcon from "@mui/icons-material/Save";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
@@ -15,11 +18,11 @@ import {
   InputLabel,
   ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
   SelectChangeEvent,
-  TextField,
+  TextField
 } from "@mui/material";
+import { MenuCategory } from "@prisma/client";
 import { Dispatch, SetStateAction, useState } from "react";
 import FileDropZone from "./FileDropZone";
 
@@ -27,6 +30,7 @@ interface Props {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
+
 const defaultNewMenu = {
   name: "",
   price: 0,
@@ -34,42 +38,46 @@ const defaultNewMenu = {
 };
 
 const NewMenu = ({ open, setOpen }: Props) => {
-  const dispatch = useAppDispatch();
   const [newMenu, setNewMenu] = useState<CreateMenuOptions>(defaultNewMenu);
+  const { isLoading } = useAppSelector((state) => state.menu);
+  const menuCategories = useAppSelector((state) => state.menuCategory.items);
+  const dispatch = useAppDispatch();
   const [menuImage, setMenuImage] = useState<File>();
-  const menuCategories = useAppSelector((store) => store.menuCategory.items);
-  const handleChange = (event: SelectChangeEvent<number[]>) => {
-    const selectedIds = event.target.value as number[];
+
+  const handleOnChange = (evt: SelectChangeEvent<number[]>) => {
+    const selectedIds = evt.target.value as number[];
     setNewMenu({ ...newMenu, menuCategoryIds: selectedIds });
   };
 
-  const handleConfirm = async () => {
+  const handleCreateMenu = async () => {
+    dispatch(setLoadingMenu(true));
     const newMenuPayload = { ...newMenu };
     if (menuImage) {
       const formData = new FormData();
-      formData.append("files", menuImage as Blob);
-      const response = await fetch(`${config.apiBaseUrl}/assets`, {
+      formData.append("files", menuImage);
+      const response = await fetch(`${config.backofficeApiUrl}/assets`, {
         method: "POST",
         body: formData,
       });
       const { assetUrl } = await response.json();
-
       newMenuPayload.assetUrl = assetUrl;
     }
-
     dispatch(
       createNewMenu({
         ...newMenuPayload,
         onSuccess: () => {
           setOpen(false);
+          dispatch(setLoadingMenu(false));
+        },
+        onError: () => {
           dispatch(
             setOpenSnackbar({
-              message: "Menu Created succcessfully.",
-              severity: "success",
-              open: true,
-              autoHideDuration: 3000,
+              message: "Error occurred when creating menu.",
+              autoHideDuration: 2000,
+              severity: "error",
             })
           );
+          dispatch(setLoadingMenu(false));
         },
       })
     );
@@ -78,43 +86,49 @@ const NewMenu = ({ open, setOpen }: Props) => {
   const onFileSelected = (files: File[]) => {
     setMenuImage(files[0]);
   };
+
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog
+      open={open}
+      onClose={() => {
+        setNewMenu(defaultNewMenu);
+        setOpen(false);
+      }}
+    >
       <DialogTitle>Create new menu</DialogTitle>
-      <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", width: 400 }}
+      >
         <TextField
           placeholder="Name"
+          sx={{ mb: 2 }}
           onChange={(evt) => setNewMenu({ ...newMenu, name: evt.target.value })}
-          sx={{ mb: 2, width: "fullwidth" }}
-        ></TextField>
+        />
         <TextField
-          placeholder="price"
-          sx={{ mb: 2, width: "fullwidth" }}
+          placeholder="Price"
+          sx={{ mb: 2 }}
           onChange={(evt) =>
             setNewMenu({ ...newMenu, price: Number(evt.target.value) })
           }
-        ></TextField>
-
+        />
         <FormControl fullWidth>
-          <InputLabel id="demo-multiple-checkbox-label">
-            MenuCateogies
-          </InputLabel>
+          <InputLabel>Menu Category</InputLabel>
           <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
             multiple
             value={newMenu.menuCategoryIds}
-            onChange={handleChange}
-            input={<OutlinedInput label="MenuCateogies" />}
-            renderValue={(selected) =>
-              selected.map((id) =>
-                menuCategories
-                  .filter((mc) => mc.id === id)
-                  .map((smc) => (
-                    <Chip key={smc.id} label={smc.name} sx={{ mr: 1 }} />
-                  ))
-              )
-            }
+            label="Menu Category"
+            onChange={handleOnChange}
+            renderValue={(selectedMenuCategoryIds) => {
+              return selectedMenuCategoryIds
+                .map((selectedMenuCategoryId) => {
+                  return menuCategories.find(
+                    (item) => item.id === selectedMenuCategoryId
+                  ) as MenuCategory;
+                })
+                .map((item) => (
+                  <Chip key={item.id} label={item.name} sx={{ mr: 1 }} />
+                ));
+            }}
             MenuProps={{
               PaperProps: {
                 style: {
@@ -124,12 +138,10 @@ const NewMenu = ({ open, setOpen }: Props) => {
               },
             }}
           >
-            {menuCategories.map((menuCategory) => (
-              <MenuItem key={menuCategory.id} value={menuCategory.id}>
-                <Checkbox
-                  checked={newMenu.menuCategoryIds.includes(menuCategory.id)}
-                />
-                <ListItemText primary={menuCategory.name} />
+            {menuCategories.map((item) => (
+              <MenuItem key={item.id} value={item.id}>
+                <Checkbox checked={newMenu.menuCategoryIds.includes(item.id)} />
+                <ListItemText primary={item.name} />
               </MenuItem>
             ))}
           </Select>
@@ -152,9 +164,16 @@ const NewMenu = ({ open, setOpen }: Props) => {
           >
             Cancel
           </Button>
-          <Button onClick={handleConfirm} variant="contained">
+          <LoadingButton
+            loading={isLoading}
+            loadingPosition="start"
+            startIcon={<SaveIcon />}
+            variant="contained"
+            disabled={!newMenu.name || !newMenu.menuCategoryIds.length}
+            onClick={handleCreateMenu}
+          >
             Confirm
-          </Button>
+          </LoadingButton>
         </Box>
       </DialogContent>
     </Dialog>

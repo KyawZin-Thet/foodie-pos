@@ -7,6 +7,10 @@ export interface MenuSlice {
   error: Error | null;
 }
 
+export interface GetMenusOptions extends BaseOptions {
+  locationId: string;
+}
+
 export interface CreateMenuOptions extends BaseOptions {
   name: string;
   price: number;
@@ -19,6 +23,9 @@ export interface UpdateMenuOptions extends BaseOptions {
   name: string;
   price: number;
   menuCategoryIds: number[];
+  locationId: number;
+  isAvailable: boolean;
+  assetUrl: string | null;
 }
 
 export interface DeleteMenuOptions extends BaseOptions {

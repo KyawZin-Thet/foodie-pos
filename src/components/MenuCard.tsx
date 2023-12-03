@@ -6,21 +6,32 @@ import Link from "next/link";
 interface Props {
   menu: Menu;
   href: string | object;
+  isAvailable?: boolean;
 }
 
-const MenuCard = ({ menu, href }: Props) => {
+const MenuCard = ({ menu, href, isAvailable }: Props) => {
   return (
     <Link
       key={menu.id}
       href={href}
       style={{
         textDecoration: "none",
+        marginRight: "15px",
+        marginBottom: "20px",
       }}
     >
-      <Card elevation={3} sx={{ width: 200, height: 220, pb: 2, m: 3 }}>
+      <Card
+        title={isAvailable === false ? "Unavailable" : ""}
+        sx={{
+          width: 200,
+          height: 220,
+          pb: 2,
+          opacity: isAvailable === false ? 0.4 : 1,
+        }}
+      >
         <CardMedia
           sx={{ height: 140, objectFit: "contain" }}
-          image={menu.assetUrl || ""}
+          image={menu.assetUrl || "/default-menu.png"}
           component={"div"}
         />
         <CardContent>

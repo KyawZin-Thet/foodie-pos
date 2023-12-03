@@ -2,6 +2,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { deleteMenu, updateMenu } from "@/store/slices/menuSlice";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
 import { UpdateMenuOptions } from "@/types/menu";
+import { config } from "@/utils/config";
+import Image from "next/image";
 
 import {
   Box,
@@ -42,12 +44,27 @@ export default function Menu() {
   );
   const menuCategoryIds = currentMenuCategoryMenu.map((i) => i.menuCategoryId);
   const currentMenu = menus.find((menu) => menu.id === menuId);
+  const disabledLocationMenus = useAppSelector(
+    (state) => state.disabledLocationMenu.items
+  );
 
   useEffect(() => {
     if (currentMenu) {
-      setData({ ...currentMenu, menuCategoryIds });
+      const selectedLocationId = Number(
+        localStorage.getItem("selectedLocationId")
+      );
+      const disabledLocationMenu = disabledLocationMenus.find(
+        (item) =>
+          item.locationId === selectedLocationId && item.menuId === menuId
+      );
+      setData({
+        ...currentMenu,
+        menuCategoryIds,
+        locationId: selectedLocationId,
+        isAvailable: disabledLocationMenu ? false : true,
+      });
     }
-  }, [currentMenu]);
+  }, [currentMenu, disabledLocationMenus]);
 
   if (!currentMenu || !data) return null;
   const handleOnChange = (evt: SelectChangeEvent<number[]>) => {
@@ -99,6 +116,51 @@ export default function Menu() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          mb: 5,
+          alignItems: "center",
+        }}
+      >
+        <Image
+          src={currentMenu.assetUrl || "/default-menu.png"}
+          alt="menu-image"
+          width={150}
+          height={150}
+          style={{
+            borderRadius: "50%",
+            margin: "0 auto",
+          }}
+        />
+        <Button variant="outlined" component="label" sx={{ mt: 2 }}>
+          Change
+          <input
+            type="file"
+            hidden
+            onChange={async (evt) => {
+              if (evt.target.files?.length) {
+                const formData = new FormData();
+                formData.append("files", evt.target.files[0]);
+                const response = await fetch(`${config.apiBaseUrl}/assets`, {
+                  method: "POST",
+                  body: formData,
+                });
+                const { assetUrl } = await response.json();
+                const updatedMenu = {
+                  id: currentMenu.id,
+                  name: currentMenu.name,
+                  price: currentMenu.price,
+                  menuCategoryIds,
+                  assetUrl,
+                };
+                dispatch(updateMenu(updatedMenu));
+              }
+            }}
+          />
+        </Button>
+      </Box>
       <TextField
         onChange={(evt) =>
           setData({ ...data, id: menuId, name: evt.target.value })

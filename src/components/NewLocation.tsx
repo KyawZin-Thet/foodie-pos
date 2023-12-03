@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/store/hook";
+import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { createNewLocation } from "@/store/slices/locationSlice";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
@@ -16,57 +17,93 @@ interface Props {
 }
 
 const NewLocation = ({ open, setOpen }: Props) => {
-  const [newLocation, setNewLocation] = useState({ name: "", address: "" });
+  const companyId = useAppSelector((state) => state.company.item?.id);
+  const [newLocation, setNewLocation] = useState({
+    name: "",
+    street: "",
+    township: "",
+    city: "",
+  });
   const dispatch = useAppDispatch();
+
+  if (!companyId) return null;
+
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Create new Location</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      sx={{
+        "& .MuiDialog-container": {
+          "& .MuiPaper-root": {
+            width: "100%",
+            maxWidth: "400px", // Set your width here
+          },
+        },
+      }}
+    >
+      <DialogTitle>Create new location</DialogTitle>
       <DialogContent>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
           <TextField
+            placeholder="Name"
+            sx={{ mb: 2 }}
             onChange={(evt) =>
               setNewLocation({ ...newLocation, name: evt.target.value })
             }
-            placeholder="Name"
-            sx={{ mb: 2 }}
-          ></TextField>
+          />
           <TextField
-            onChange={(evt) =>
-              setNewLocation({ ...newLocation, address: evt.target.value })
-            }
-            placeholder="Address"
+            placeholder="Street"
             sx={{ mb: 2 }}
-          ></TextField>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-          <Button
-            variant="contained"
-            sx={{ width: "fit-content", mr: 2 }}
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={newLocation.name && newLocation.address ? false : true}
-            variant="contained"
-            sx={{ width: "fit-content" }}
-            onClick={() => {
-              dispatch(
-                createNewLocation({
-                  ...newLocation,
-                  onSuccess: () => setOpen(false),
-                })
-              );
-            }}
-          >
-            Confirm
-          </Button>
+            onChange={(evt) =>
+              setNewLocation({ ...newLocation, street: evt.target.value })
+            }
+          />
+          <TextField
+            placeholder="Township"
+            sx={{ mb: 2 }}
+            onChange={(evt) =>
+              setNewLocation({ ...newLocation, township: evt.target.value })
+            }
+          />
+          <TextField
+            placeholder="City"
+            sx={{ mb: 2 }}
+            onChange={(evt) =>
+              setNewLocation({ ...newLocation, city: evt.target.value })
+            }
+          />
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              variant="contained"
+              sx={{ width: "fit-content", mr: 2 }}
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={
+                newLocation.name &&
+                newLocation.street &&
+                newLocation.township &&
+                newLocation.city
+                  ? false
+                  : true
+              }
+              variant="contained"
+              sx={{ width: "fit-content" }}
+              onClick={() => {
+                dispatch(
+                  createNewLocation({
+                    ...newLocation,
+                    companyId,
+                    onSuccess: () => setOpen(false),
+                  })
+                );
+              }}
+            >
+              Confirm
+            </Button>
+          </Box>
         </Box>
       </DialogContent>
     </Dialog>

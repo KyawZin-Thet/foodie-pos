@@ -1,3 +1,4 @@
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Paper, Typography } from "@mui/material";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -5,12 +6,23 @@ import { ReactNode } from "react";
 interface Props {
   icon: ReactNode;
   title: string;
+  isAvailable?: boolean;
   href?: string;
   subtitle?: string;
-  isAvailable?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
 }
 
-const ItemCard = ({ icon, title, href, subtitle, isAvailable }: Props) => {
+const ItemCard = ({
+  icon,
+  title,
+  href,
+  subtitle,
+  isAvailable,
+  selected,
+  onClick,
+}: Props) => {
+  // const theme = useAppSelector((state) => state.app.theme);
   if (href) {
     return (
       <Link href={href} style={{ textDecoration: "none", color: "#000000" }}>
@@ -25,17 +37,14 @@ const ItemCard = ({ icon, title, href, subtitle, isAvailable }: Props) => {
             justifyContent: "center",
             alignItems: "center",
             m: 2,
-            opacity: isAvailable === false ? 0.5 : 1,
+            opacity: isAvailable === false ? 0.4 : 1,
+            // backgroundColor: theme === "dark" ? "info.main" : "info.main",
           }}
         >
           {icon}
-          <Typography sx={{ color: "#4C4C6D", fontWeight: "700", mx: 2 }}>
-            {title}
-          </Typography>
+          <Typography sx={{ fontWeight: "700" }}>{title}</Typography>
           {subtitle && (
-            <Typography sx={{ color: "#4C4C6D", fontSize: 14 }}>
-              {subtitle}
-            </Typography>
+            <Typography sx={{ fontSize: 14 }}>{subtitle}</Typography>
           )}
         </Paper>
       </Link>
@@ -54,17 +63,26 @@ const ItemCard = ({ icon, title, href, subtitle, isAvailable }: Props) => {
         justifyContent: "center",
         alignItems: "center",
         m: 2,
+        position: "relative",
+        cursor: "pointer",
+        // backgroundColor: theme === "dark" ? "info.main" : "inherit",
       }}
+      onClick={() => onClick && onClick()}
     >
-      {icon}
-      <Typography sx={{ color: "#4C4C6D", fontWeight: "700" }}>
-        {title}
-      </Typography>
-      {subtitle && (
-        <Typography sx={{ color: "#4C4C6D", fontSize: 14 }}>
-          {subtitle}
-        </Typography>
+      {selected && (
+        <CheckCircleOutlineIcon
+          sx={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            fontSize: "30px",
+            color: "#1B9C85",
+          }}
+        />
       )}
+      {icon}
+      <Typography sx={{ fontWeight: "700" }}>{title}</Typography>
+      {subtitle && <Typography sx={{ fontSize: 14 }}>{subtitle}</Typography>}
     </Paper>
   );
 };

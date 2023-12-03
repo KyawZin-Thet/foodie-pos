@@ -49,7 +49,6 @@ export default async function handler(
           data: { menuCategoryId: id, LocationId: locationId },
         });
 
-      console.log("isAvailable false", exist);
       return res
         .status(200)
         .json({ updatedMenuCategory, disabledLocationMenuCategory });

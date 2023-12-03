@@ -1,4 +1,3 @@
-import { useAppSelector } from "@/store/hook";
 import { Box, Chip, Typography } from "@mui/material";
 import { Addon, AddonCategory } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
@@ -15,10 +14,6 @@ const AddonCategories = ({
   selectedAddons,
   setSelectedAddons,
 }: Props) => {
-  const allMenuAddonCategories = useAppSelector(
-    (state) => state.menuAddonCategory.items
-  );
-
   return (
     <Box>
       {addonCategories.map((item) => {

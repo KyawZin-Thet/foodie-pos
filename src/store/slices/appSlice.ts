@@ -3,55 +3,67 @@ import { config } from "@/utils/config";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { setAddonCategories } from "./addonCategorySlice";
 import { setAddons } from "./addonSlice";
+import { setCompany } from "./companySlice";
+
+import { setDisabledLocationMenus } from "./disabledLocationMenuSlice";
 import { setDisabledLocationMenuCategories } from "./disableLocationMenucategorySlice";
 import { setLocations } from "./locationSlice";
 import { setMenuAddonCategory } from "./menuAddonCategorySlice";
 import { setMenuCategoryMenu } from "./menuCategoryMenuSlice";
 import { setMenuCategories } from "./menuCategorySlice";
 import { setMenus } from "./menuSlice";
+import { setOrders } from "./orderSlice";
 import { setTables } from "./tableSlice";
 
 const initialState: AppSlice = {
   init: false,
-  isLoading: true,
+  // theme: "light",
+  isLoading: false,
   error: null,
 };
 
 export const fetchAppData = createAsyncThunk(
   "app/fetchAppData",
   async (options: GetAppDataOptions, thunkApi) => {
-    const { companyId, tableId, onSuccess, onError } = options;
-    const appDataUrl =
-      companyId && tableId
-        ? `${config.apiBaseUrl}/app?companyId=${companyId}&tableId=${tableId}`
-        : `${config.apiBaseUrl}/app`;
+    const { tableId, onSuccess, onError } = options;
     try {
+      const appDataUrl = tableId
+        ? `${config.orderApiUrl}/app?tableId=${tableId}`
+        : `${config.backofficeApiUrl}/app`;
       const response = await fetch(appDataUrl);
       const appData = await response.json();
       const {
         locations,
         menuCategories,
-        disabledLocationMenuCategories,
-        menuCategoryMenus,
         menus,
+        menuCategoryMenus,
         menuAddonCategories,
         addonCategories,
         addons,
         tables,
+        disabledLocationMenuCategories,
+        disabledLocationMenus,
+        orders,
+        company,
       } = appData;
-
       thunkApi.dispatch(setInit(true));
       thunkApi.dispatch(setLocations(locations));
       thunkApi.dispatch(setMenuCategories(menuCategories));
-      thunkApi.dispatch(
-        setDisabledLocationMenuCategories(disabledLocationMenuCategories)
-      );
+      thunkApi.dispatch(setMenus(menus));
       thunkApi.dispatch(setMenuCategoryMenu(menuCategoryMenus));
       thunkApi.dispatch(setMenuAddonCategory(menuAddonCategories));
-      thunkApi.dispatch(setMenus(menus));
       thunkApi.dispatch(setAddonCategories(addonCategories));
       thunkApi.dispatch(setAddons(addons));
       thunkApi.dispatch(setTables(tables));
+      thunkApi.dispatch(
+        setDisabledLocationMenuCategories(disabledLocationMenuCategories)
+      );
+      thunkApi.dispatch(setDisabledLocationMenus(disabledLocationMenus));
+      thunkApi.dispatch(setOrders(orders));
+      thunkApi.dispatch(setCompany(company));
+      // thunkApi.dispatch(
+      //   setTheme((localStorage.getItem("theme") as Theme) ?? "light")
+      // );
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError();
@@ -66,6 +78,9 @@ const appSlice = createSlice({
     setInit: (state, action) => {
       state.init = action.payload;
     },
+    // setTheme: (state, action: PayloadAction<Theme>) => {
+    //   state.theme = action.payload;
+    // },
   },
 });
 

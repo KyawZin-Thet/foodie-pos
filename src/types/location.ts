@@ -2,6 +2,7 @@ import { Location } from "@prisma/client";
 
 export interface LocationSlice {
   items: Location[];
+  selectedLocation: Location | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -11,9 +12,10 @@ export interface BaseOptions {
   onError?: (data?: any) => void;
 }
 
-export interface LocationSliceOptions extends BaseOptions {}
-
 export interface CreateNewLocationOptions extends BaseOptions {
   name: string;
-  address: string;
+  street: string;
+  township: string;
+  city: string;
+  companyId: number;
 }

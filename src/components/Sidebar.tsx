@@ -15,19 +15,17 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-export default function SideBar() {
-  const { data: session } = useSession();
-
+const SideBar = () => {
+  // const { theme } = useAppSelector((state) => state.app);
   return (
     <Box
       sx={{
         minWidth: 250,
         backgroundColor: "success.main",
         borderTopRightRadius: "20px",
-        minHeight: "100vh",
+        minHeight: "100%",
       }}
     >
       <List sx={{ p: 0 }}>
@@ -58,7 +56,6 @@ export default function SideBar() {
         variant={"middle"}
         sx={{ backgroundColor: "secondary.main", mt: 2 }}
       />
-
       <List>
         {sidebarMenuItems.slice(-1).map((item) => (
           <Link
@@ -82,7 +79,9 @@ export default function SideBar() {
       </List>
     </Box>
   );
-}
+};
+
+export default SideBar;
 
 export const sidebarMenuItems = [
   {

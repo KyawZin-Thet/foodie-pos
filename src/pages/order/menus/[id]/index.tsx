@@ -4,9 +4,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hook";
 
 import { addToCart } from "@/store/slices/cartSlice";
 import { CartItem } from "@/types/cart";
-import { generateRandomId } from "@/utils/generals";
 import { Box, Button } from "@mui/material";
 import { Addon } from "@prisma/client";
+import { nanoid } from "nanoid";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -74,7 +74,7 @@ const MenuDetail = () => {
   const handleAddToCart = () => {
     if (!menu) return;
     const cartItem: CartItem = {
-      id: cartItemId ? cartItemId : generateRandomId(),
+      id: cartItemId ? cartItemId : nanoid(),
       menu,
       quantity,
       addons: selectedAddons,

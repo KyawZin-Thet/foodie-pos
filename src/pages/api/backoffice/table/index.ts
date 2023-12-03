@@ -3,7 +3,7 @@ import { prisma } from "@/utils/db";
 import { getQrCodeUrl, qrCodeImageUpload } from "@/utils/fileUpload";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "../../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,8 +27,8 @@ export default async function handler(
     const companyId = dbUser?.companyId as number;
     const tableId = table.id;
 
-    await qrCodeImageUpload(companyId, tableId);
-    const assetUrl = getQrCodeUrl(companyId, tableId);
+    await qrCodeImageUpload(tableId);
+    const assetUrl = getQrCodeUrl(tableId);
 
     const createdTable = await prisma.table.update({
       data: { assetUrl },
