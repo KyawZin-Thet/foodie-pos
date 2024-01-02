@@ -29,6 +29,7 @@ export default function Menu() {
   const disabledLocationMenuCategories = useAppSelector(
     (store) => store.disabledLocationMenuCategory.items
   );
+  console.log(disabledLocationMenuCategories);
 
   const locationId = 1; // Number(localStorage.getItem("selectedLocationId"));
 
@@ -58,7 +59,6 @@ export default function Menu() {
     dispatch(
       updateMenuCategory({
         ...data,
-
         onSuccess: () => {
           dispatch(
             setOpenSnackbar({

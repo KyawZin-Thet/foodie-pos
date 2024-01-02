@@ -13,7 +13,7 @@ import {
 } from "./disabledLocationMenuSlice";
 import { removeMenuAddonCategoryByMenuId } from "./menuAddonCategorySlice";
 import {
-  addNewMenuCategoryMenu,
+  addMenuCategoryMenu,
   replaceMenuCategoryMenu,
 } from "./menuCategoryMenuSlice";
 
@@ -29,7 +29,7 @@ export const getMenus = createAsyncThunk(
     const { locationId, onSuccess, onError } = options;
     try {
       const response = await fetch(
-        `${config.backofficeApiUrl}/menus?locationId=${locationId}`
+        `${config.backofficeApiUrl}/menu?locationId=${locationId}`
       );
       const menus = await response.json();
       thunkApi.dispatch(setMenus(menus));
@@ -46,16 +46,18 @@ export const createNewMenu = createAsyncThunk(
     const { name, price, assetUrl, menuCategoryIds, onSuccess, onError } =
       options;
     try {
-      const response = await fetch(`${config.backofficeApiUrl}/menus`, {
+      const response = await fetch(`${config.backofficeApiUrl}/menu`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ name, price, assetUrl, menuCategoryIds }),
       });
       const { menu, menuCategoryMenus } = await response.json();
       thunkApi.dispatch(addMenu(menu));
-      thunkApi.dispatch(addNewMenuCategoryMenu(menuCategoryMenus));
+      thunkApi.dispatch(addMenuCategoryMenu(menuCategoryMenus));
       onSuccess && onSuccess();
     } catch (err) {
+      console.log(err);
+
       onError && onError();
     }
   }
@@ -76,7 +78,7 @@ export const updateMenu = createAsyncThunk(
       onError,
     } = options;
     try {
-      const response = await fetch(`${config.backofficeApiUrl}/menus`, {
+      const response = await fetch(`${config.backofficeApiUrl}/menu`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -113,13 +115,15 @@ export const deleteMenu = createAsyncThunk(
   async (options: DeleteMenuOptions, thunkApi) => {
     const { id, onSuccess, onError } = options;
     try {
-      await fetch(`${config.backofficeApiUrl}/menus?id=${id}`, {
+      await fetch(`${config.backofficeApiUrl}/menu?id=${id}`, {
         method: "DELETE",
       });
       thunkApi.dispatch(removeMenu({ id }));
       thunkApi.dispatch(removeMenuAddonCategoryByMenuId({ menuId: id }));
       onSuccess && onSuccess();
     } catch (err) {
+      console.log(err);
+
       onError && onError();
     }
   }

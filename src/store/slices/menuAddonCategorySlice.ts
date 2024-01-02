@@ -11,7 +11,7 @@ const menuAddonCategorySlice = createSlice({
   name: "menuAddonCategorySlice",
   initialState,
   reducers: {
-    setMenuAddonCategory: (state, action) => {
+    setMenuAddonCategories: (state, action) => {
       state.items = action.payload;
     },
     addMenuAddonCategories: (state, action) => {
@@ -44,7 +44,7 @@ const menuAddonCategorySlice = createSlice({
 });
 
 export const {
-  setMenuAddonCategory,
+  setMenuAddonCategories,
   addMenuAddonCategories,
   replaceMenuAddonCategory,
   removeMenuAddonCategoryByMenuId,

@@ -22,11 +22,14 @@ export const createNewAddonCategory = createAsyncThunk(
   async (options: CreateAddonCategoriesOption, thunkApi) => {
     const { menuIds, isRequired, name, onError, onSuccess } = options;
     try {
-      const response = await fetch(`${config.apiBaseUrl}/addon-category`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, isRequired, menuIds }),
-      });
+      const response = await fetch(
+        `${config.backofficeApiUrl}/addon-category`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name, isRequired, menuIds }),
+        }
+      );
       const data = await response.json();
       const { addonCategory, menuAddonCategories } = data;
 
@@ -46,11 +49,14 @@ export const updateAddonCategory = createAsyncThunk(
     const { menuIds, id, isRequired, name, onError, onSuccess } = options;
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/addon-category`, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ id, name, isRequired, menuIds }),
-      });
+      const response = await fetch(
+        `${config.backofficeApiUrl}/addon-category`,
+        {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ id, name, isRequired, menuIds }),
+        }
+      );
       const { updatedAddonCategory, menuAddonCategories } =
         await response.json();
 
@@ -70,7 +76,7 @@ export const deleteAddonCategory = createAsyncThunk(
     const { id, onError, onSuccess } = options;
     try {
       const response = await fetch(
-        `${config.apiBaseUrl}/addon-category?id=${id}`,
+        `${config.backofficeApiUrl}/addon-category?id=${id}`,
         {
           method: "DELETE",
           body: JSON.stringify({ id }),

@@ -16,7 +16,7 @@ export interface AddonSliceOptions extends BaseOptions {}
 export interface CreateAddonOptions extends BaseOptions {
   name: string;
   price: number;
-  addonCategoryId: number;
+  addonCategoryId?: number;
 }
 
 export interface UpdateAddonOptions extends BaseOptions {

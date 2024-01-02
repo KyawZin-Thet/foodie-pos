@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { removeAddonCategory } from "@/store/slices/addonCategorySlice";
+import { removeMenuAddonCategoryById } from "@/store/slices/menuAddonCategorySlice";
 import { deleteMenu, updateMenu } from "@/store/slices/menuSlice";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
 import { UpdateMenuOptions } from "@/types/menu";
 import { config } from "@/utils/config";
-import Image from "next/image";
-
 import {
   Box,
   Button,
@@ -13,43 +13,49 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  DialogTitle,
   FormControl,
+  FormControlLabel,
   InputLabel,
   ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
+  Switch,
   TextField,
 } from "@mui/material";
 import { MenuCategory } from "@prisma/client";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
-export default function Menu() {
+const MenuDetail = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const menuId = Number(router.query.id);
-  const [data, setData] = useState<UpdateMenuOptions>();
-  const [open, setOpen] = useState<boolean>(false);
-
-  const menus = useAppSelector((store) => store.menu.items);
-  const menuCategories = useAppSelector((store) => store.menuCategory.items);
-
-  const menuCategoryMenus = useAppSelector(
-    (store) => store.menuCategoryMenu.items
+  const menus = useAppSelector((state) => state.menu.items);
+  const menuCategories = useAppSelector((state) => state.menuCategory.items);
+  const menuAddonCategories = useAppSelector(
+    (state) => state.menuAddonCategory.items
   );
+  const menuCategoryMenus = useAppSelector(
+    (state) => state.menuCategoryMenu.items
+  );
+  const menu = menus.find((item) => item.id === menuId);
   const currentMenuCategoryMenu = menuCategoryMenus.filter(
     (item) => item.menuId === menuId
   );
-  const menuCategoryIds = currentMenuCategoryMenu.map((i) => i.menuCategoryId);
-  const currentMenu = menus.find((menu) => menu.id === menuId);
+  const menuCategoryIds = currentMenuCategoryMenu.map(
+    (item) => item.menuCategoryId
+  );
+  const [data, setData] = useState<UpdateMenuOptions>();
+  const dispatch = useAppDispatch();
+  const [open, setOpen] = useState(false);
   const disabledLocationMenus = useAppSelector(
     (state) => state.disabledLocationMenu.items
   );
 
   useEffect(() => {
-    if (currentMenu) {
+    if (menu) {
       const selectedLocationId = Number(
         localStorage.getItem("selectedLocationId")
       );
@@ -58,15 +64,16 @@ export default function Menu() {
           item.locationId === selectedLocationId && item.menuId === menuId
       );
       setData({
-        ...currentMenu,
+        ...menu,
         menuCategoryIds,
         locationId: selectedLocationId,
         isAvailable: disabledLocationMenu ? false : true,
       });
     }
-  }, [currentMenu, disabledLocationMenus]);
+  }, [menu, disabledLocationMenus]);
 
-  if (!currentMenu || !data) return null;
+  if (!menu || !data) return null;
+
   const handleOnChange = (evt: SelectChangeEvent<number[]>) => {
     const selectedIds = evt.target.value as number[];
     setData({ ...data, id: menuId, menuCategoryIds: selectedIds });
@@ -79,7 +86,7 @@ export default function Menu() {
         onSuccess: () => {
           dispatch(
             setOpenSnackbar({
-              message: "Menu Updated succcessfully.",
+              message: "Menu  Updated succcessfully.",
               severity: "success",
               open: true,
               autoHideDuration: 3000,
@@ -93,10 +100,25 @@ export default function Menu() {
   const handleDeleteMenu = () => {
     dispatch(
       deleteMenu({
-        ...data,
+        id: menuId,
         onSuccess: () => {
           router.push("/backoffice/menus");
-          setOpen(false);
+          menuAddonCategories
+            .filter((item) => item.menuId === menuId)
+            .map((item) => item.addonCategoryId)
+            .forEach((addonCategoryId) => {
+              const entries = menuAddonCategories.filter(
+                (item) => item.addonCategoryId === addonCategoryId
+              );
+              if (entries.length === 1) {
+                const menuAddonCategoryId = entries[0].id;
+                dispatch(removeAddonCategory({ id: addonCategoryId }));
+                dispatch(
+                  removeMenuAddonCategoryById({ id: menuAddonCategoryId })
+                );
+              }
+            });
+
           dispatch(
             setOpenSnackbar({
               message: "Menu Deleted succcessfully.",
@@ -110,8 +132,19 @@ export default function Menu() {
     );
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleMenuImageUpdate = async (evt: ChangeEvent<HTMLInputElement>) => {
+    const files = evt.target.files;
+    if (files) {
+      const file = files[0];
+      const formData = new FormData();
+      formData.append("files", file);
+      const response = await fetch(`${config.backofficeApiUrl}/assets`, {
+        method: "POST",
+        body: formData,
+      });
+      const { assetUrl } = await response.json();
+      dispatch(updateMenu({ ...data, assetUrl }));
+    }
   };
 
   return (
@@ -120,77 +153,57 @@ export default function Menu() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          mb: 5,
           alignItems: "center",
+          mb: 4,
         }}
       >
         <Image
-          src={currentMenu.assetUrl || "/default-menu.png"}
+          src={menu.assetUrl || "/default-menu.png"}
           alt="menu-image"
           width={150}
           height={150}
-          style={{
-            borderRadius: "50%",
-            margin: "0 auto",
-          }}
+          style={{ borderRadius: 8 }}
         />
-        <Button variant="outlined" component="label" sx={{ mt: 2 }}>
-          Change
-          <input
-            type="file"
-            hidden
-            onChange={async (evt) => {
-              if (evt.target.files?.length) {
-                const formData = new FormData();
-                formData.append("files", evt.target.files[0]);
-                const response = await fetch(`${config.apiBaseUrl}/assets`, {
-                  method: "POST",
-                  body: formData,
-                });
-                const { assetUrl } = await response.json();
-                const updatedMenu = {
-                  id: currentMenu.id,
-                  name: currentMenu.name,
-                  price: currentMenu.price,
-                  menuCategoryIds,
-                  assetUrl,
-                };
-                dispatch(updateMenu(updatedMenu));
-              }
-            }}
-          />
+        <Button
+          variant="outlined"
+          component="label"
+          sx={{ width: "fit-content", mt: 2 }}
+        >
+          Upload File
+          <input type="file" hidden onChange={handleMenuImageUpdate} />
         </Button>
       </Box>
       <TextField
-        onChange={(evt) =>
-          setData({ ...data, id: menuId, name: evt.target.value })
-        }
-        defaultValue={currentMenu.name}
+        defaultValue={menu.name}
         sx={{ mb: 2 }}
-      ></TextField>
+        onChange={(evt) => {
+          setData({ ...data, id: menuId, name: evt.target.value });
+        }}
+      />
       <TextField
+        defaultValue={menu.price}
+        sx={{ mb: 2 }}
         onChange={(evt) =>
           setData({ ...data, id: menuId, price: Number(evt.target.value) })
         }
-        defaultValue={currentMenu.price}
-        sx={{ mb: 2 }}
-      ></TextField>
+      />
       <FormControl fullWidth>
         <InputLabel>Menu Category</InputLabel>
         <Select
           multiple
           value={data.menuCategoryIds}
-          onChange={handleOnChange}
           label="Menu Category"
-          renderValue={(selectedmenuCategoryIds) => {
-            return selectedmenuCategoryIds
-              .map(
-                (selectedmenuCategoryId) =>
-                  menuCategories.find(
-                    (item) => item.id === selectedmenuCategoryId
-                  ) as MenuCategory
-              )
-              .map((i) => <Chip key={i.id} label={i.name} sx={{ mr: 1 }} />);
+          onChange={handleOnChange}
+          renderValue={(selectedMenuCategoryIds) => {
+            return selectedMenuCategoryIds
+              .map((selectedMenuCategoryId) => {
+                return menuCategories.find(
+                  (item) => item.id === selectedMenuCategoryId
+                ) as MenuCategory;
+              })
+              .map((item) => (
+                <Chip key={item.id} label={item.name} sx={{ mr: 1 }} />
+              ));
           }}
           MenuProps={{
             PaperProps: {
@@ -209,6 +222,15 @@ export default function Menu() {
           ))}
         </Select>
       </FormControl>
+      <FormControlLabel
+        control={
+          <Switch
+            defaultChecked={data.isAvailable}
+            onChange={(evt, value) => setData({ ...data, isAvailable: value })}
+          />
+        }
+        label="Available"
+      />
       <Box sx={{ display: "flex" }}>
         <Button
           variant="contained"
@@ -226,25 +248,20 @@ export default function Menu() {
           Update
         </Button>
       </Box>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Confirm delete menu</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are u Sure U want to delete this menu?
-          </DialogContentText>
+          Are you sure you want to delete this menu?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDeleteMenu} autoFocus>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleDeleteMenu}>
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
-}
+};
+
+export default MenuDetail;

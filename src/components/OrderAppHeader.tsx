@@ -4,30 +4,29 @@ import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React from "react";
 
-interface Props {
-  cartItemCount: number;
-}
-
-const OrderAppHeader = ({ cartItemCount }: Props) => {
+const OrderAppHeader = () => {
+  const { isLoading } = useAppSelector((state) => state.app);
   const router = useRouter();
   const isHome = router.pathname === "/order";
   const isCart = router.pathname === "/order/cart";
   const isActiveOrder = router.pathname.includes("/order/active-order");
   const isCartOrActiveOrderPage = isCart || isActiveOrder;
   const company = useAppSelector((state) => state.company.item);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const showCompanyInfo = isHome && company;
 
   return (
-    <Box>
+    <Box sx={{ position: "relative" }}>
       <Box
         sx={{
           bgcolor: "#1B9C85",
           height: 60,
           px: 2,
-          display: { xs: "flex", sm: "none" },
+          display: { xs: "flex", md: "none" },
           justifyContent: "space-between",
           alignItems: "center",
+          boxSizing: "border-box",
         }}
       >
         <Typography
@@ -51,6 +50,7 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
               sx={{
                 fontSize: "40px",
                 color: "#FFE194",
+                zIndex: 5,
               }}
             />
           ) : (
@@ -64,7 +64,7 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
                   color: "#FFE194",
                 }}
               />
-              {cartItemCount > 0 && (
+              {cartItems.length > 0 && (
                 <Typography
                   sx={{
                     textAlign: "right",
@@ -74,7 +74,7 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
                     right: -10,
                   }}
                 >
-                  {cartItemCount}
+                  {cartItems.length}
                 </Typography>
               )}
             </>
@@ -84,18 +84,15 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
       <Box
         sx={{
           width: "100vw",
-          display: { xs: "none", sm: "flex" },
+          display: { xs: "none", md: "flex" },
           flexDirection: "column",
           alignItems: "center",
-          position: "fixed",
-          zIndex: 5,
-          top: 0,
         }}
       >
         <Box
           sx={{
-            position: "absolute",
-            top: 10,
+            position: "fixed",
+            top: 15,
             right: { xs: 40, md: 80, lg: 200 },
             cursor: "pointer",
           }}
@@ -124,7 +121,7 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
                   color: "#FFE194",
                 }}
               />
-              {cartItemCount > 0 && (
+              {cartItems.length > 0 && (
                 <Typography
                   variant="h5"
                   sx={{
@@ -135,7 +132,7 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
                     right: -10,
                   }}
                 >
-                  {cartItemCount}
+                  {cartItems.length}
                 </Typography>
               )}
             </>
@@ -150,22 +147,27 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
           style={{ width: "100%", height: "auto" }}
           alt="header-image"
         />
-        {isHome && (
+        {showCompanyInfo && (
           <Box sx={{ position: "absolute" }}>
-            <Box sx={{ textAlign: "center" }}>
+            <Box sx={{ mt: -7, textAlign: "center" }}>
               <Typography
-                variant="h3"
                 sx={{
                   fontWeight: "bold",
-                  color: "#4C4C6D",
-                  mt: 15,
+                  color: "info.main",
+                  mt: { xs: 1, md: 2, lg: 4, xl: 10 },
+                  fontSize: { sm: 25, md: 30, lg: 40 },
                 }}
               >
                 {company?.name}
               </Typography>
               <Typography
                 variant="body1"
-                sx={{ fontStyle: "italic", lineHeight: 1.2 }}
+                sx={{
+                  fontStyle: "italic",
+                  lineHeight: 1.2,
+                  color: "info.main",
+                  opacity: 0.7,
+                }}
               >
                 {company?.street}
                 <br /> {company?.township}, {company?.city}
@@ -178,4 +180,4 @@ const OrderAppHeader = ({ cartItemCount }: Props) => {
   );
 };
 
-export default React.memo(OrderAppHeader);
+export default OrderAppHeader;

@@ -24,8 +24,6 @@ const SettingsPage = () => {
     }
   }, [company]);
 
-  console.log("my datas ----", company, data);
-
   if (!company || !data) return null;
 
   const handleUpdateCompany = () => {

@@ -43,7 +43,7 @@ const NewTable = ({ open, setOpen }: Props) => {
   };
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Create new menu</DialogTitle>
+      <DialogTitle>Create new Table</DialogTitle>
       <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
         <Box
           sx={{

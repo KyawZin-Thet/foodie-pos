@@ -1,7 +1,6 @@
 import AddonCategories from "@/components/AddonCategories";
 import QuantitySelector from "@/components/QuantitySelector";
 import { useAppDispatch, useAppSelector } from "@/store/hook";
-
 import { addToCart } from "@/store/slices/cartSlice";
 import { CartItem } from "@/types/cart";
 import { Box, Button } from "@mui/material";
@@ -13,17 +12,15 @@ import { useEffect, useState } from "react";
 
 const MenuDetail = () => {
   const { query, isReady, ...router } = useRouter();
-  const menuId = Number(query.id);
-  const cartItems = useAppSelector((state) => state.cart.items);
-  const cartItemId = String(query.cartItemId);
-  const cartItem = cartItems.find((item) => item.id === cartItemId);
   const menus = useAppSelector((state) => state.menu.items);
-  const addons = useAppSelector((state) => state.addon.items);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const menuId = Number(query.id);
+  const cartItemId = query.cartItemId;
+  const cartItem = cartItems.find((item) => item.id === cartItemId);
   const menu = menus.find((item) => item.id === menuId);
   const [quantity, setQuantity] = useState(1);
-  const [isDisabled, setIsDisabled] = useState(true);
   const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
-  const dispatch = useAppDispatch();
+  const [isDisabled, setIsDisabled] = useState(true);
   const allMenuAddonCategories = useAppSelector(
     (state) => state.menuAddonCategory.items
   );
@@ -33,33 +30,30 @@ const MenuDetail = () => {
   const addonCategories = useAppSelector(
     (state) => state.addonCategory.items
   ).filter((item) => addonCategoryIds.includes(item.id));
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const requiredAddonCategories = addonCategories.filter(
       (item) => item.isRequired
     );
-    const selectedRequired = selectedAddons.filter((selectedAddon) => {
-      const addon = addons.find((item) => item.id === selectedAddon.id);
+    const selectedRequiredAddons = selectedAddons.filter((selectedAddon) => {
       const addonCategory = addonCategories.find(
-        (item) => item.id === addon?.addonCategoryId && item.isRequired
+        (item) => item.id === selectedAddon.addonCategoryId
       );
-      return addonCategory ? true : false;
+      return addonCategory?.isRequired ? true : false;
     });
     const isDisabled =
-      requiredAddonCategories.length !== selectedRequired.length;
+      requiredAddonCategories.length !== selectedRequiredAddons.length;
     setIsDisabled(isDisabled);
   }, [selectedAddons, addonCategories]);
 
   useEffect(() => {
-    if (cartItemId) {
-      const cartItem = cartItems.find((item) => item.id === cartItemId);
-      if (cartItem) {
-        const { addons, quantity } = cartItem;
-        setSelectedAddons(addons);
-        setQuantity(quantity);
-      }
+    if (cartItem) {
+      const { addons, quantity } = cartItem;
+      setSelectedAddons(addons);
+      setQuantity(quantity);
     }
-  }, [cartItemId]);
+  }, [cartItem]);
 
   const handleQuantityDecrease = () => {
     const newValue = quantity - 1 === 0 ? 1 : quantity - 1;
@@ -73,27 +67,33 @@ const MenuDetail = () => {
 
   const handleAddToCart = () => {
     if (!menu) return;
-    const cartItem: CartItem = {
-      id: cartItemId ? cartItemId : nanoid(),
+    const newCartItem: CartItem = {
+      id: cartItem ? cartItem.id : nanoid(7),
       menu,
-      quantity,
       addons: selectedAddons,
+      quantity,
     };
-    dispatch(addToCart(cartItem));
-    const pathname = cartItemId ? "/order/cart" : "/order";
+    dispatch(addToCart(newCartItem));
+    const pathname = cartItem ? "/order/cart" : "/order";
     router.push({ pathname, query });
   };
 
   if (!isReady || !menu) return null;
 
   return (
-    <Box sx={{ position: "relative", zIndex: 5 }}>
+    <Box
+      sx={{
+        position: "relative",
+        px: 2,
+        top: { xs: 10, md: -180 },
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
-          p: 4,
+          alignItems: "center",
         }}
       >
         <Image
@@ -108,10 +108,12 @@ const MenuDetail = () => {
         />
         <Box
           sx={{
-            mt: 5,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            width: { xs: "100%", sm: 350 },
+            mt: 5,
+            boxSizing: "border-box",
           }}
         >
           <AddonCategories
@@ -130,10 +132,10 @@ const MenuDetail = () => {
             onClick={handleAddToCart}
             sx={{
               width: "fit-content",
-              mt: 3,
+              mt: 2,
             }}
           >
-            {cartItem ? "Update" : "Add to cart"}
+            {cartItem ? "Update cart" : "Add to cart"}
           </Button>
         </Box>
       </Box>

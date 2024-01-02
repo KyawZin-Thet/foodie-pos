@@ -20,7 +20,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  TextField
+  TextField,
 } from "@mui/material";
 import { MenuCategory } from "@prisma/client";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -52,6 +52,7 @@ const NewMenu = ({ open, setOpen }: Props) => {
   const handleCreateMenu = async () => {
     dispatch(setLoadingMenu(true));
     const newMenuPayload = { ...newMenu };
+
     if (menuImage) {
       const formData = new FormData();
       formData.append("files", menuImage);
@@ -62,12 +63,21 @@ const NewMenu = ({ open, setOpen }: Props) => {
       const { assetUrl } = await response.json();
       newMenuPayload.assetUrl = assetUrl;
     }
+
     dispatch(
       createNewMenu({
         ...newMenuPayload,
         onSuccess: () => {
           setOpen(false);
           dispatch(setLoadingMenu(false));
+          dispatch(
+            setOpenSnackbar({
+              message: "addon category Created succcessfully.",
+              severity: "success",
+              open: true,
+              autoHideDuration: 3000,
+            })
+          );
         },
         onError: () => {
           dispatch(

@@ -1,6 +1,5 @@
 import MenuCard from "@/components/MenuCard";
 import { useAppSelector } from "@/store/hook";
-
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -11,7 +10,7 @@ import { useEffect, useState } from "react";
 const OrderApp = () => {
   const { isReady, ...router } = useRouter();
   const query = router.query;
-  const companyId = query.companyId as string;
+  const tableId = query.tableId as string;
   const menuCategories = useAppSelector((state) => state.menuCategory.items);
   const menuCategoryMenus = useAppSelector(
     (state) => state.menuCategoryMenu.items
@@ -28,7 +27,7 @@ const OrderApp = () => {
   }, [menuCategories]);
 
   useEffect(() => {
-    if (isReady && !companyId) {
+    if (isReady && !tableId) {
       router.push("/");
     }
   }, [isReady]);
@@ -45,8 +44,21 @@ const OrderApp = () => {
   };
 
   return (
-    <Box>
-      <Box>
+    <Box
+      sx={{
+        position: "relative",
+        maxWidth: 900,
+        m: "0 auto",
+        top: { md: -50, lg: -70, xl: -130 },
+      }}
+    >
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          bgcolor: "info.main",
+        }}
+      >
         <Tabs
           TabIndicatorProps={{
             style: { background: "#1B9C85" },
@@ -54,7 +66,9 @@ const OrderApp = () => {
           value={value}
           onChange={(evt, value) => setValue(value)}
           variant="scrollable"
+          scrollButtons={false}
           sx={{
+            pb: 1,
             ".Mui-selected": {
               color: "#1B9C85",
               fontWeight: "bold",
@@ -73,7 +87,15 @@ const OrderApp = () => {
           })}
         </Tabs>
       </Box>
-      <Box sx={{ pt: 2, display: "flex" }}>{renderMenus()}</Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          px: 2,
+        }}
+      >
+        {renderMenus()}
+      </Box>
     </Box>
   );
 };

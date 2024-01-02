@@ -1,36 +1,44 @@
-import { menuCategoryMenuSlice } from "@/types/menuCategoryMenu";
-import { MenuCategoryMenu } from "@prisma/client";
-import { createSlice } from "@reduxjs/toolkit";
+import { MenuCategoryMenuSlice } from "@/types/menuCategoryMenu";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: menuCategoryMenuSlice = {
+const initialState: MenuCategoryMenuSlice = {
   items: [],
   isLoading: false,
   error: null,
 };
 
-const menuCategoryMenu = createSlice({
-  name: "menuCategoryMenu",
+const menuCategoryMenuSlice = createSlice({
+  name: "menuCategoryMenuSlice",
   initialState,
   reducers: {
-    setMenuCategoryMenu: (state, action) => {
+    setMenuCategoryMenus: (state, action) => {
       state.items = action.payload;
     },
-    addNewMenuCategoryMenu: (state, action) => {
+    addMenuCategoryMenu: (state, action) => {
       state.items = [...state.items, ...action.payload];
     },
     replaceMenuCategoryMenu: (state, action) => {
       const menuId = action.payload[0].menuId; // 5
-      const otherMenuCategoryMenus: MenuCategoryMenu[] = state.items.filter(
+      const otherMenuCategoryMenu = state.items.filter(
         (item) => item.menuId !== menuId
       );
-      state.items = [...otherMenuCategoryMenus, ...action.payload];
+      state.items = [...otherMenuCategoryMenu, ...action.payload];
+    },
+    removeMenuCategoryMenu: (
+      state,
+      action: PayloadAction<{ menuCategoryId: number }>
+    ) => {
+      state.items = state.items.filter(
+        (item) => item.menuCategoryId !== action.payload.menuCategoryId
+      );
     },
   },
 });
 
 export const {
-  setMenuCategoryMenu,
-  addNewMenuCategoryMenu,
+  setMenuCategoryMenus,
+  addMenuCategoryMenu,
   replaceMenuCategoryMenu,
-} = menuCategoryMenu.actions;
-export default menuCategoryMenu.reducer;
+  removeMenuCategoryMenu,
+} = menuCategoryMenuSlice.actions;
+export default menuCategoryMenuSlice.reducer;
