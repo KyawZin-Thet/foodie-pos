@@ -4,9 +4,12 @@ import { useAppSelector } from "@/store/hook";
 import { Box, Button } from "@mui/material";
 import { useState } from "react";
 
-export default function Menus() {
-  const menus = useAppSelector((store) => store.menu.items);
-  const [open, setOpen] = useState<boolean>(false);
+const MenusPage = () => {
+  const [open, setOpen] = useState(false);
+  const menus = useAppSelector((state) => state.menu.items);
+  const disabledLocationMenus = useAppSelector(
+    (state) => state.disabledLocationMenu.items
+  );
   return (
     <Box>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -14,18 +17,34 @@ export default function Menus() {
           New menu
         </Button>
       </Box>
-      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-        {menus.map((menu) => (
-          <Box key={menu.id}>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: { xs: "center", sm: "flex-start" },
+        }}
+      >
+        {menus.map((item) => {
+          const exist = disabledLocationMenus.find(
+            (disabledLocationMenu) =>
+              disabledLocationMenu.locationId ===
+                Number(localStorage.getItem("selectedLocationId")) &&
+              disabledLocationMenu.menuId === item.id
+          );
+          const isAvailable = exist ? false : true;
+          return (
             <MenuCard
-              href={`/backoffice/menus/${menu.id}`}
-              key={menu.id}
-              menu={menu}
+              href={`/backoffice/menus/${item.id}`}
+              key={item.id}
+              menu={item}
+              isAvailable={isAvailable}
             />
-          </Box>
-        ))}
+          );
+        })}
       </Box>
-      <NewMenu open={open} setOpen={setOpen}></NewMenu>
+      <NewMenu open={open} setOpen={setOpen} />
     </Box>
   );
-}
+};
+
+export default MenusPage;

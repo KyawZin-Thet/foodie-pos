@@ -12,7 +12,7 @@ export interface BaseOptions {
 }
 
 export interface CreateMenuCategoryOptions extends BaseOptions {
-  newMenuCategory: string;
+  name: string;
   locationId: number;
 }
 

@@ -26,6 +26,9 @@ export interface OrderAddon {
   addonCategoryId: number;
   addons: Addon[];
 }
+export interface RefreshOrderOptions extends BaseOptions {
+  orderSeq: string;
+}
 
 export interface OrderItem {
   itemId: string;

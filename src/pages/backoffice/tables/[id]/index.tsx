@@ -1,61 +1,49 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
 import { deleteTable, updateTable } from "@/store/slices/tableSlice";
+import { UpdateTableOptions } from "@/types/table";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  DialogTitle,
   TextField,
 } from "@mui/material";
-
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Tables() {
-  const dispatch = useAppDispatch();
+const TableDetail = () => {
   const router = useRouter();
   const tableId = Number(router.query.id);
-  const [newTable, setNewTable] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
+  const tables = useAppSelector((state) => state.table.items);
+  const table = tables.find((item) => item.id === tableId);
+  const [data, setData] = useState<UpdateTableOptions>();
+  const dispatch = useAppDispatch();
+  const [open, setOpen] = useState(false);
 
-  const tables = useAppSelector((store) => store.table.items);
+  useEffect(() => {
+    if (table) {
+      setData({
+        id: table.id,
+        name: table.name,
+        locationId: table.locationId,
+      });
+    }
+  }, [table]);
 
-  const currentTable = tables.find((table) => table.id === tableId);
+  if (!table || !data) return null;
 
-  if (!currentTable) return null;
-
-  const handleUpdateMenu = () => {
-    const locationId = Number(localStorage.getItem("selectedLocationId"));
-    if (!locationId) return null;
-    dispatch(
-      updateTable({
-        id: tableId,
-        name: newTable,
-        locationId,
-        onSuccess: () => {
-          dispatch(
-            setOpenSnackbar({
-              message: "table Updated succcessfully.",
-              severity: "success",
-              open: true,
-              autoHideDuration: 3000,
-            })
-          );
-        },
-      })
-    );
+  const handleUpdateTable = () => {
+    dispatch(updateTable(data));
   };
 
-  const handleDeleteAddon = () => {
+  const handleDeleteTable = () => {
     dispatch(
       deleteTable({
-        id: tableId,
+        id: table.id,
         onSuccess: () => {
-          router.push("/backoffice/menu-categories");
-          setOpen(false);
           dispatch(
             setOpenSnackbar({
               message: "Table Deleted succcessfully.",
@@ -64,59 +52,47 @@ export default function Tables() {
               autoHideDuration: 3000,
             })
           );
+          router.push("/backoffice/tables");
         },
       })
     );
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <Box>
-      <TextField
-        onChange={(evt) => setNewTable(evt.target.value)}
-        defaultValue={currentTable.name}
-        sx={{ mb: 2 }}
-      ></TextField>
-
-      <Box sx={{ display: "flex" }}>
-        <Button
-          variant="contained"
-          color="error"
-          sx={{ m: 2, width: "fit-content" }}
-          onClick={() => setOpen(true)}
-        >
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button variant="outlined" color="error" onClick={() => setOpen(true)}>
           Delete
         </Button>
-        <Button
-          variant="contained"
-          sx={{ m: 2, width: "fit-content" }}
-          onClick={handleUpdateMenu}
-        >
-          Update
-        </Button>
       </Box>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+      <TextField
+        defaultValue={data.name}
+        sx={{ mb: 2 }}
+        onChange={(evt) =>
+          setData({ ...data, id: table.id, name: evt.target.value })
+        }
+      />
+      <Button
+        variant="contained"
+        sx={{ mt: 2, width: "fit-content" }}
+        onClick={handleUpdateTable}
       >
+        Update
+      </Button>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Confirm delete table</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are u Sure U want to delete this Table?
-          </DialogContentText>
+          Are you sure you want to delete this table?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDeleteAddon} autoFocus>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleDeleteTable}>
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
-}
+};
+
+export default TableDetail;

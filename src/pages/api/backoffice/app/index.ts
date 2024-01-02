@@ -16,7 +16,7 @@ export default async function handler(
     const user = session.user;
     const name = user?.name as string;
     const email = user?.email as string;
-    const dbUser = await prisma.user.findUnique({ where: { email } });
+    const dbUser = await prisma.user.findFirst({ where: { email } });
     if (!dbUser) {
       // 1. create new company for user and assign user to it.
       const newCompanyName = "Ah Wa Sarr";

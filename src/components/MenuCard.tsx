@@ -27,6 +27,7 @@ const MenuCard = ({ menu, href, isAvailable }: Props) => {
           height: 220,
           pb: 2,
           opacity: isAvailable === false ? 0.4 : 1,
+          mr: 3,
         }}
       >
         <CardMedia

@@ -10,45 +10,72 @@ const ActiveOrder = () => {
   const router = useRouter();
   const orderSeq = router.query.id;
   const orders = useAppSelector((state) => state.order.items);
-  const totalPrice = orders.length && orders[0].totalPrice;
   const addons = useAppSelector((state) => state.addon.items);
   const menus = useAppSelector((state) => state.menu.items);
   const tables = useAppSelector((state) => state.table.items);
-  const orderItems = formatOrders(orders, addons,);
+  const orderItems = formatOrders(orders, addons, menus, tables);
+  const tableId = Number(router.query.tableId);
+  const table = tables.find((table) => table.id === tableId);
   const dispatch = useAppDispatch();
-  let intervalId: number | null;
+  let intervalId: number;
 
   useEffect(() => {
     if (orderSeq) {
-      intervalId = window.setInterval(fetchOrderStatus, 3000);
+      intervalId = window.setInterval(handleRefreshOrder, 10000);
     }
     return () => {
-      intervalId && window.clearInterval(intervalId);
+      window.clearInterval(intervalId);
     };
   }, [orderSeq]);
 
-  const fetchOrderStatus = () => {
+  const handleRefreshOrder = () => {
     dispatch(refreshOrder({ orderSeq: String(orderSeq) }));
   };
 
+  if (!orders.length) return null;
+
   return (
-    <Box sx={{ position: "relative", top: 150, zIndex: 5 }}>
+    <Box>
+      <Box
+        sx={{
+          zIndex: -1,
+          mt: -7,
+          display: "flex",
+          justifyContent: "center",
+          p: 3,
+          borderRadius: 15,
+          flexDirection: "column",
+          alignItems: "center",
+          position: "relative",
+          top: { xs: 0, md: -220, lg: -280 },
+        }}
+      >
+        <Typography
+          sx={{
+            color: { xs: "success.main", md: "info.main" },
+            fontSize: { xs: 20, md: 25 },
+          }}
+        >
+          Table: {table?.name}
+        </Typography>
+        <Typography
+          sx={{
+            color: { xs: "success.main", md: "info.main" },
+            fontSize: { xs: 20, md: 25 },
+          }}
+        >
+          Total price: {orders[0].totalPrice}
+        </Typography>
+      </Box>
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column",
+          flexWrap: "wrap",
           justifyContent: "center",
-          alignItems: "center",
-          p: 3,
-          bgcolor: "#E8F6EF",
-          borderRadius: 15,
-          mx: 3,
+          position: "relative",
+          top: { md: -200 },
         }}
       >
-        <Typography>OrderSeq: {orderSeq}</Typography>
-        <Typography>Total price: {totalPrice}</Typography>
-      </Box>
-      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         {orderItems.map((orderItem) => {
           return (
             <OrderCard

@@ -1,9 +1,7 @@
-// src/store/slices/orderSlice.ts
-
 import {
   CreateOrderOptions,
   OrderSlice,
-  refreshOrderOptions,
+  RefreshOrderOptions,
   UpdateOrderOptions,
 } from "@/types/order";
 import { config } from "@/utils/config";
@@ -16,29 +14,12 @@ const initialState: OrderSlice = {
   error: null,
 };
 
-export const refreshOrder = createAsyncThunk(
-  "order/refreshOrder",
-  async (options: refreshOrderOptions, thunkApi) => {
-    const { orderSeq, onSuccess, onError } = options;
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/orders?orderSeq=${orderSeq}`
-      );
-      const { orders } = await response.json();
-      thunkApi.dispatch(setOrders(orders));
-      onSuccess && onSuccess(orders);
-    } catch (err) {
-      onError && onError();
-    }
-  }
-);
-
 export const createOrder = createAsyncThunk(
   "order/createOrder",
   async (options: CreateOrderOptions, thunkApi) => {
     const { tableId, cartItems, onSuccess, onError } = options;
     try {
-      const response = await fetch(`${config.apiBaseUrl}/orders`, {
+      const response = await fetch(`${config.orderApiUrl}/orders`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ tableId, cartItems }),
@@ -57,9 +38,9 @@ export const updateOrder = createAsyncThunk(
   async (options: UpdateOrderOptions, thunkApi) => {
     const { itemId, status, onSuccess, onError } = options;
     try {
-      // thunkApi.dispatch(setIsLoading(true));
+      thunkApi.dispatch(setIsLoading(true));
       const response = await fetch(
-        `${config.apiBaseUrl}/orders?itemId=${itemId}`,
+        `${config.orderApiUrl}/orders?itemId=${itemId}`,
         {
           method: "PUT",
           headers: { "content-type": "application/json" },
@@ -68,7 +49,26 @@ export const updateOrder = createAsyncThunk(
       );
       const { orders } = await response.json();
       thunkApi.dispatch(setOrders(orders));
-      // thunkApi.dispatch(setIsLoading(false));
+      thunkApi.dispatch(setIsLoading(false));
+      onSuccess && onSuccess(orders);
+    } catch (err) {
+      onError && onError();
+    }
+  }
+);
+
+export const refreshOrder = createAsyncThunk(
+  "order/refreshOrder",
+  async (options: RefreshOrderOptions, thunkApi) => {
+    const { orderSeq, onSuccess, onError } = options;
+    try {
+      thunkApi.dispatch(setIsLoading(true));
+      const response = await fetch(
+        `${config.orderApiUrl}/orders?orderSeq=${orderSeq}`
+      );
+      const { orders } = await response.json();
+      thunkApi.dispatch(setOrders(orders));
+      thunkApi.dispatch(setIsLoading(false));
       onSuccess && onSuccess(orders);
     } catch (err) {
       onError && onError();
@@ -80,11 +80,14 @@ const orderSlice = createSlice({
   name: "order",
   initialState,
   reducers: {
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
     setOrders: (state, action: PayloadAction<Order[]>) => {
-      state.items = [...state.items, ...action.payload];
+      state.items = action.payload;
     },
   },
 });
 
-export const { setOrders } = orderSlice.actions;
+export const { setOrders, setIsLoading } = orderSlice.actions;
 export default orderSlice.reducer;

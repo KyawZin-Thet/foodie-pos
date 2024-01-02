@@ -1,9 +1,11 @@
 import { CreateNewLocationOptions, LocationSlice } from "@/types/location";
 import { config } from "@/utils/config";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Location } from "@prisma/client";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: LocationSlice = {
   items: [],
+  selectedLocation: null,
   isLoading: false,
   error: null,
 };
@@ -11,12 +13,13 @@ const initialState: LocationSlice = {
 export const createNewLocation = createAsyncThunk(
   "location/createNewLocation",
   async (options: CreateNewLocationOptions, thunkApi) => {
-    const { name, address, onError, onSuccess } = options;
+    const { name, street, township, city, companyId, onSuccess, onError } =
+      options;
     try {
-      const response = await fetch(`${config.apiBaseUrl}/location`, {
+      const response = await fetch(`${config.backofficeApiUrl}/location`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, address }),
+        body: JSON.stringify({ name, street, township, city, companyId }),
       });
       const createdLocation = await response.json();
       thunkApi.dispatch(addLocation(createdLocation));
@@ -28,11 +31,27 @@ export const createNewLocation = createAsyncThunk(
 );
 
 const locationSlice = createSlice({
-  name: "Location",
+  name: "location",
   initialState,
   reducers: {
-    setLocations: (state, action) => {
+    setLocations: (state, action: PayloadAction<Location[]>) => {
       state.items = action.payload;
+      const selectedLocationId = localStorage.getItem("selectedLocationId");
+      if (!selectedLocationId) {
+        const firstLocationId = action.payload[0].id;
+        localStorage.setItem("selectedLocationId", String(firstLocationId));
+        state.selectedLocation = action.payload[0];
+      } else {
+        const selectedLocation = state.items.find(
+          (item) => item.id === Number(selectedLocationId)
+        );
+        if (selectedLocation) {
+          state.selectedLocation = selectedLocation;
+        }
+      }
+    },
+    setSelectedLocation: (state, action: PayloadAction<Location>) => {
+      state.selectedLocation = action.payload;
     },
     addLocation: (state, action) => {
       state.items = [...state.items, action.payload];
@@ -40,5 +59,6 @@ const locationSlice = createSlice({
   },
 });
 
-export const { setLocations, addLocation } = locationSlice.actions;
+export const { setLocations, addLocation, setSelectedLocation } =
+  locationSlice.actions;
 export default locationSlice.reducer;

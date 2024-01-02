@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/store/hook";
-import { CreateNewMenuCategory } from "@/store/slices/menuCategorySlice";
+import { createNewMenuCategory } from "@/store/slices/menuCategorySlice";
 import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
 import {
   Box,
@@ -18,14 +18,14 @@ interface Props {
 
 const NewMenuCategory = ({ open, setOpen }: Props) => {
   const dispatch = useAppDispatch();
-  const [newMenuCategory, setNewMenuCategory] = useState("");
+  const [name, setName] = useState("");
 
   const handleCreateMenuCategory = () => {
     const currentLocationId = localStorage.getItem("selectedLocationId");
     dispatch(
-      CreateNewMenuCategory({
+      createNewMenuCategory({
         locationId: Number(currentLocationId),
-        newMenuCategory,
+        name,
         onSuccess: () => {
           setOpen(false);
           dispatch(
@@ -53,7 +53,7 @@ const NewMenuCategory = ({ open, setOpen }: Props) => {
         >
           <TextField
             placeholder="Name"
-            onChange={(evt) => setNewMenuCategory(evt.target.value)}
+            onChange={(evt) => setName(evt.target.value)}
             sx={{ mb: 2, width: "250px" }}
           ></TextField>
         </Box>
@@ -67,7 +67,7 @@ const NewMenuCategory = ({ open, setOpen }: Props) => {
             Cancel
           </Button>
           <Button
-            disabled={!newMenuCategory}
+            disabled={!name}
             onClick={handleCreateMenuCategory}
             variant="contained"
           >

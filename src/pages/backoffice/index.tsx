@@ -3,9 +3,9 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data } = useSession();
   const router = useRouter();
-  if (!session) {
+  if (!data) {
     return (
       <Box
         sx={{
@@ -17,7 +17,7 @@ export default function Home() {
       >
         <Button
           variant="contained"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: "/backoffice" })}
         >
           Sign in
         </Button>

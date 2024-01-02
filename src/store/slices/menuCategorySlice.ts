@@ -5,11 +5,13 @@ import {
   UpdateMenuCategoryOptions,
 } from "@/types/menuCategory";
 import { config } from "@/utils/config";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { MenuCategory } from "@prisma/client";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  addDisabledLocationMenuCategory,
-  removeDisalbedLocationmenuCategory,
-} from "./disableLocationMenucategorySlice";
+  removeDisabledLocationmenuCategory,
+  setDisabledLocationMenuCategories,
+} from "./disableLocationMenuCategorySlice";
+import { removeMenuCategoryMenu } from "./menuCategoryMenuSlice";
 
 const initialState: MenuCategorySlice = {
   items: [],
@@ -17,19 +19,18 @@ const initialState: MenuCategorySlice = {
   error: null,
 };
 
-export const CreateNewMenuCategory = createAsyncThunk(
-  "MenuCategory/CreateNewMenuCategory",
+export const createNewMenuCategory = createAsyncThunk(
+  "menuCategory/createNewMenuCategory",
   async (options: CreateMenuCategoryOptions, thunkApi) => {
-    const { locationId, newMenuCategory, onError, onSuccess } = options;
+    const { name, locationId, onSuccess, onError } = options;
     try {
-      const response = await fetch(`${config.apiBaseUrl}/menu-category`, {
+      const response = await fetch(`${config.backofficeApiUrl}/menu-category`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ newMenuCategory, locationId }),
+        body: JSON.stringify({ name, locationId }),
       });
-      const { createdMenuCategory } = await response.json();
-
-      thunkApi.dispatch(addMenuCategory(createdMenuCategory));
+      const menuCategory = await response.json();
+      thunkApi.dispatch(addMenuCategory(menuCategory));
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError();
@@ -38,26 +39,25 @@ export const CreateNewMenuCategory = createAsyncThunk(
 );
 
 export const updateMenuCategory = createAsyncThunk(
-  "MenuCategory/updateMenuCategory",
+  "menuCategory/updateMenuCategory",
   async (options: UpdateMenuCategoryOptions, thunkApi) => {
-    const { id, name, locationId, isAvailable, onError, onSuccess } = options;
+    const { id, name, locationId, isAvailable, onSuccess, onError } = options;
     try {
-      const response = await fetch(`${config.apiBaseUrl}/menu-category`, {
+      const response = await fetch(`${config.backofficeApiUrl}/menu-category`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ id, name, locationId, isAvailable }),
       });
-      const { updatedMenuCategory, disabledLocationMenuCategory } =
+      const { menuCategory, disabledLocationMenuCategory } =
         await response.json();
-
-      thunkApi.dispatch(replaceMenuCategory(updatedMenuCategory));
+      thunkApi.dispatch(replaceMenuCategory(menuCategory));
       if (isAvailable === false) {
         thunkApi.dispatch(
-          addDisabledLocationMenuCategory(disabledLocationMenuCategory)
+          setDisabledLocationMenuCategories(disabledLocationMenuCategory)
         );
       } else {
         thunkApi.dispatch(
-          removeDisalbedLocationmenuCategory(disabledLocationMenuCategory)
+          removeDisabledLocationmenuCategory({ locationId, menuCategoryId: id })
         );
       }
 
@@ -69,18 +69,15 @@ export const updateMenuCategory = createAsyncThunk(
 );
 
 export const deleteMenuCategory = createAsyncThunk(
-  "MenuCategory/deleteMenuCategory",
+  "menuCategory/deleteMenuCategory",
   async (options: DeleteMenuCategoryOptions, thunkApi) => {
-    const { id, onError, onSuccess } = options;
+    const { id, onSuccess, onError } = options;
     try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/menu-category?id=${id}`,
-        {
-          method: "DELETE",
-          body: JSON.stringify({ id }),
-        }
-      );
+      await fetch(`${config.backofficeApiUrl}/menu-category?id=${id}`, {
+        method: "DELETE",
+      });
       thunkApi.dispatch(removeMenuCategory({ id }));
+      thunkApi.dispatch(removeMenuCategoryMenu({ menuCategoryId: id }));
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError();
@@ -89,7 +86,7 @@ export const deleteMenuCategory = createAsyncThunk(
 );
 
 const menuCategorySlice = createSlice({
-  name: "MenuCategory",
+  name: "menuCategory",
   initialState,
   reducers: {
     setMenuCategories: (state, action) => {
@@ -98,12 +95,12 @@ const menuCategorySlice = createSlice({
     addMenuCategory: (state, action) => {
       state.items = [...state.items, action.payload];
     },
-    replaceMenuCategory: (state, action) => {
+    replaceMenuCategory: (state, action: PayloadAction<MenuCategory>) => {
       state.items = state.items.map((item) =>
         item.id === action.payload.id ? action.payload : item
       );
     },
-    removeMenuCategory: (state, action) => {
+    removeMenuCategory: (state, action: PayloadAction<{ id: number }>) => {
       state.items = state.items.filter((item) => item.id !== action.payload.id);
     },
   },
