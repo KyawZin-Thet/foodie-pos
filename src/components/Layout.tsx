@@ -1,6 +1,6 @@
-import BackofficeLayout from "@/components/BackofficeLayout";
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";
+import BackofficeLayout from "./BackOfficeLayout";
 import OrderLayout from "./OrderLayout";
 
 interface Props {

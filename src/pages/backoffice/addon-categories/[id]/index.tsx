@@ -3,7 +3,7 @@ import {
   deleteAddonCategory,
   updateAddonCategory,
 } from "@/store/slices/addonCategorySlice";
-import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
 import { UpdateAddonCategoryOptions } from "@/types/addonCategory";
 import {
   Box,

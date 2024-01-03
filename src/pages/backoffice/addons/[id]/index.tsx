@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { deleteAddon, updateAddon } from "@/store/slices/addonSlice";
-import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
 import { UpdateAddonOptions } from "@/types/addon";
 import {
   Box,

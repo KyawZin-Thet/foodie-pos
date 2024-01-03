@@ -10,7 +10,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   removeDisabledLocationmenuCategory,
   setDisabledLocationMenuCategories,
-} from "./disableLocationMenuCategorySlice";
+} from "./disabledLocationMenucategorySlice";
 import { removeMenuCategoryMenu } from "./menuCategoryMenuSlice";
 
 const initialState: MenuCategorySlice = {

@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/store/hook";
-import { setOpenSnackbar } from "@/store/slices/MySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
 import { CreateNewTable } from "@/store/slices/tableSlice";
 import {
   Box,

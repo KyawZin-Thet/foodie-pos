@@ -1,7 +1,7 @@
-import { SnackbarSlice } from "@/types/snackbar";
+import { SnackBarSlice } from "@/types/mySnackBar";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState: SnackbarSlice = {
+const initialState: SnackBarSlice = {
   open: false,
   message: null,
   autoHideDuration: 5000,
