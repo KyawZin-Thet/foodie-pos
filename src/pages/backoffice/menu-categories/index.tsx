@@ -9,11 +9,10 @@ export default function MenuCategories() {
   const menuCategories = useAppSelector((store) => store.menuCategory.items);
   const [open, setOpen] = useState(false);
 
-  if (!menuCategories) return null;
-
   const disabledLocationMenuCategories = useAppSelector(
     (store) => store.disabledLocationMenuCategory.items
   );
+  if (!menuCategories) return null;
   return (
     <Box>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

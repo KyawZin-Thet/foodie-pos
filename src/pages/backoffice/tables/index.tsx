@@ -27,6 +27,7 @@ export default function Tables() {
       <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         {tables.map((table) => (
           <Box
+            key={table.id}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -35,7 +36,6 @@ export default function Tables() {
           >
             <ItemCard
               icon={<TableBarIcon />}
-              key={table.id}
               title={table.name}
               href={`/backoffice/tables/${table.id}`}
             />
