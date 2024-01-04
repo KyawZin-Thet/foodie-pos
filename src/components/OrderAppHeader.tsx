@@ -12,7 +12,12 @@ const OrderAppHeader = () => {
   const isCart = router.pathname === "/order/cart";
   const isActiveOrder = router.pathname.includes("/order/active-order");
   const isCartOrActiveOrderPage = isCart || isActiveOrder;
-  const company = useAppSelector((state) => state.company.item);
+  const company = {
+    name: "Ah Wa Sar",
+    street: "50th Street",
+    township: "MyTown",
+    city: "MyCity",
+  };
   const cartItems = useAppSelector((state) => state.cart.items);
   const showCompanyInfo = isHome && company;
 

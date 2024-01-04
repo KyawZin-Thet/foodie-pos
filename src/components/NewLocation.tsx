@@ -1,6 +1,5 @@
-import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { useAppDispatch } from "@/store/hook";
 import { createNewLocation } from "@/store/slices/locationSlice";
-import { CompanySlice } from "@/types/company";
 import {
   Box,
   Button,
@@ -17,8 +16,8 @@ interface Props {
 }
 
 const NewLocation = ({ open, setOpen }: Props) => {
-  const company: CompanySlice = useAppSelector((state) => state.company);
-  const companyId = company.item?.id;
+  // const company: CompanySlice = useAppSelector((state) => state.company);
+  const companyId = 1;
 
   const [newLocation, setNewLocation] = useState({
     name: "",
