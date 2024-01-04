@@ -1,5 +1,20 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { CartState } from "@/store/slices/cartSlice";
 import { createNewLocation } from "@/store/slices/locationSlice";
+import { AddonSlice } from "@/types/addon";
+import { AddonCategorySlice } from "@/types/addonCategory";
+import { AppSlice } from "@/types/app";
+import { CompanySlice } from "@/types/company";
+import { DisabledLocationMenuSlice } from "@/types/disabledLocationMenu";
+import { DisabledLocationMenuCategorySlice } from "@/types/disabledLocationMenuCategory";
+import { LocationSlice } from "@/types/location";
+import { MenuSlice } from "@/types/menu";
+import { MenuAddonCategorySlice } from "@/types/menuAddonCategory";
+import { MenuCategorySlice } from "@/types/menuCategory";
+import { MenuCategoryMenuSlice } from "@/types/menuCategoryMenu";
+import { SnackBarSlice } from "@/types/mySnackBar";
+import { OrderSlice } from "@/types/order";
+import { TableSlice } from "@/types/table";
 import {
   Box,
   Button,
@@ -10,13 +25,33 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 
+interface StateType {
+  app: AppSlice;
+  location: LocationSlice;
+  menuCategory: MenuCategorySlice;
+  menu: MenuSlice;
+  menuCategoryMenu: MenuCategoryMenuSlice;
+  addonCategory: AddonCategorySlice;
+  menuAddonCategory: MenuAddonCategorySlice;
+  addon: AddonSlice;
+  table: TableSlice;
+  snackBar: SnackBarSlice;
+  disabledLocationMenuCategory: DisabledLocationMenuCategorySlice;
+  disabledLocationMenu: DisabledLocationMenuSlice;
+  cart: CartState;
+  order: OrderSlice;
+  company: CompanySlice;
+}
+
 interface Props {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const NewLocation = ({ open, setOpen }: Props) => {
-  const companyId = useAppSelector((state) => state.company.item?.id);
+  const companyId = useAppSelector(
+    (state: StateType) => state.company.item?.id
+  );
 
   const [newLocation, setNewLocation] = useState({
     name: "",

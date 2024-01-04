@@ -1,7 +1,7 @@
 import { CartItem } from "@/types/cart";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CartState {
+export interface CartState {
   isLoading: boolean;
   items: CartItem[];
   error: Error | null;
