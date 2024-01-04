@@ -3,7 +3,7 @@ import {
   deleteMenuCategory,
   updateMenuCategory,
 } from "@/store/slices/menuCategorySlice";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 import { UpdateMenuCategoryOptions } from "@/types/menuCategory";
 import {
   Box,

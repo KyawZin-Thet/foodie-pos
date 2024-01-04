@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/store/hook";
 import { createNewMenuCategory } from "@/store/slices/menuCategorySlice";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 import {
   Box,
   Button,

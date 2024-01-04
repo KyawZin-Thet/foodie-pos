@@ -1,7 +1,7 @@
 // src/components/Snackbar.tsx
 
 import { useAppDispatch, useAppSelector } from "@/store/hook";
-import { resetSnackbar } from "@/store/slices/mySnackBarSlice";
+import { resetSnackbar } from "@/store/slices/mySnackBarsSlice";
 
 import { Alert, Snackbar as MuiSnackBar } from "@mui/material";
 

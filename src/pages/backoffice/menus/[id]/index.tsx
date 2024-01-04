@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { removeAddonCategory } from "@/store/slices/addonCategorySlice";
 import { removeMenuAddonCategoryById } from "@/store/slices/menuAddonCategorySlice";
 import { deleteMenu, updateMenu } from "@/store/slices/menuSlice";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 import { UpdateMenuOptions } from "@/types/menu";
 import { config } from "@/utils/config";
 import {

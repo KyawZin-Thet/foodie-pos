@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { createNewAddonCategory } from "@/store/slices/addonCategorySlice";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 // import { setOpenSnackbar } from "@/store/slices/snackbarSlice";
 import { CreateAddonCategoriesOption } from "@/types/addonCategory";
 import {

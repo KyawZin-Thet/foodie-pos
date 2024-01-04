@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { createNewMenu, setLoadingMenu } from "@/store/slices/menuSlice";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 
 import { CreateMenuOptions } from "@/types/menu";
 import { config } from "@/utils/config";

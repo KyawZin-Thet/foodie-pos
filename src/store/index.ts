@@ -12,7 +12,7 @@ import menuAddonCategoryReducer from "./slices/menuAddonCategorySlice";
 import menuCategoryMenuReducer from "./slices/menuCategoryMenuSlice";
 import menuCategoryReducer from "./slices/menuCategorySlice";
 import menuReducer from "./slices/menuSlice";
-import snackBarReducer from "./slices/mySnackBarSlice";
+import snackBarReducer from "./slices/mySnackBarsSlice";
 import orderReducer from "./slices/orderSlice";
 import tableReducer from "./slices/tableSlice";
 export const store = configureStore({

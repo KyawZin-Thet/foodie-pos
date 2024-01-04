@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
-import { setOpenSnackbar } from "@/store/slices/mySnackBarSlice";
+import { setOpenSnackbar } from "@/store/slices/mySnackBarsSlice";
 import { deleteTable, updateTable } from "@/store/slices/tableSlice";
 import { UpdateTableOptions } from "@/types/table";
 import {
