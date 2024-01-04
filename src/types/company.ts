@@ -10,7 +10,7 @@ export interface MycompanyType {
 }
 
 export interface CompanySlice {
-  item: null | MycompanyType;
+  item: MycompanyType;
   isLoading: boolean;
   error: Error | null;
 }
