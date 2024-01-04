@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/store/hook";
-import { updateCompany } from "@/store/slices/companySlice";
+// import { updateCompany } from "@/store/slices/companySlice";
 
 // import { setTheme } from "@/store/slices/appSlice";
 
@@ -36,7 +36,8 @@ const SettingsPage = () => {
   if (!company || !data) return null;
 
   const handleUpdateCompany = () => {
-    dispatch(updateCompany(data));
+    // dispatch(updateCompany(data));
+    alert("this feature isn't available now");
   };
 
   return (
