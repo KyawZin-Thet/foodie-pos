@@ -1,10 +1,23 @@
-import { CompanySlice, UpdateCompanyOptions } from "@/types/company";
+import {
+  CompanySlice,
+  MycompanyType,
+  UpdateCompanyOptions,
+} from "@/types/company";
 import { config } from "@/utils/config";
 import { Company } from "@prisma/client";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const defaultCompany: MycompanyType = {
+  id: 1,
+  name: "",
+  street: "",
+  township: "",
+  city: "",
+  isArchived: false,
+};
+
 const initialState: CompanySlice = {
-  item: null,
+  item: defaultCompany,
   isLoading: false,
   error: null,
 };

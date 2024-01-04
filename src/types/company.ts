@@ -1,8 +1,16 @@
-import { Company } from "@prisma/client";
 import { BaseOptions } from "./app";
 
+export interface MycompanyType {
+  id: number;
+  name: string;
+  street: string;
+  township: string;
+  city: string;
+  isArchived: boolean;
+}
+
 export interface CompanySlice {
-  item: Company | null;
+  item: null | MycompanyType;
   isLoading: boolean;
   error: Error | null;
 }
