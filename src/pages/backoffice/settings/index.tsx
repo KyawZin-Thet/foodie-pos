@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { useAppDispatch } from "@/store/hook";
 
 import { updateCompany } from "../../../store/slices/companySlice";
 
@@ -10,7 +10,15 @@ import { useEffect, useState } from "react";
 
 const SettingsPage = () => {
   // const { theme } = useAppSelector((state) => state.app);
-  const company = useAppSelector((state) => state.company.item);
+  // const company = useAppSelector((state) => state.company.item);
+  const company = {
+    id: 1,
+    name: "Ah Wa Sar",
+    street: "50th Street",
+    township: "MyTown",
+    city: "MyCity",
+  };
+
   const [data, setData] = useState<UpdateCompanyOptions>();
   const dispatch = useAppDispatch();
 
