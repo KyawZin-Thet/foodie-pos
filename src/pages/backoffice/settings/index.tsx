@@ -1,6 +1,5 @@
 import { useAppDispatch } from "@/store/hook";
-
-import { updateCompany } from "../../../store/slices/companySlice";
+import { updateCompany } from "@/store/slices/companySlice";
 
 // import { setTheme } from "@/store/slices/appSlice";
 
