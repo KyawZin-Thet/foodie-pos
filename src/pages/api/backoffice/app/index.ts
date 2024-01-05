@@ -23,22 +23,23 @@ export default async function handler(
       const newCompanyStreet = "Hintada Street 21";
       const newCompanyTownship = "Sanchaung";
       const newCompanyCity = "Yangon";
-      const company = await prisma.company.create({
-        data: {
-          name: newCompanyName,
-          street: newCompanyStreet,
-          township: newCompanyTownship,
-          city: newCompanyCity,
-        },
-      });
+      const company = ""
+      // const company = await prisma.company.create({
+      //   data: {
+      //     name: newCompanyName,
+      //     street: newCompanyStreet,
+      //     township: newCompanyTownship,
+      //     city: newCompanyCity,
+      //   },
+      // });
       // 2. create new user
       await prisma.user.create({
-        data: { name, email, companyId: company.id },
+        data: { name, email, companyId: 1 },
       });
       // 3. create new menu category
       const newMenuCategoryName = "Default menu category";
       const menuCategory = await prisma.menuCategory.create({
-        data: { name: newMenuCategoryName, companyId: company.id },
+        data: { name: newMenuCategoryName, companyId: 1 },
       });
       // 4. create new menu
       const newMenuName = "Default menu";
@@ -81,7 +82,7 @@ export default async function handler(
           street: newLocationStreet,
           township: newLocationTownship,
           city: newLocationCity,
-          companyId: company.id,
+          companyId:1,
         },
       });
       // 9. create new table
@@ -112,9 +113,10 @@ export default async function handler(
       });
     } else {
       const companyId = dbUser.companyId;
-      const company = await prisma.company.findFirst({
-        where: { id: companyId },
-      });
+      const company =""
+      // const company = await prisma.company.findFirst({
+      //   where: { id: companyId },
+      // });
       const locations = await prisma.location.findMany({
         where: { companyId, isArchived: false },
       });

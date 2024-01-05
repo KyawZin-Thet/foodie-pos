@@ -18,9 +18,10 @@ export default async function handler(
       where: { id: table?.locationId },
     });
     const companyId = location?.companyId;
-    const company = await prisma.company.findFirst({
-      where: { id: companyId },
-    });
+    const company = "";
+    // const company = await prisma.company.findFirst({
+    //   where: { id: companyId },
+    // });
     let menuCategories = await prisma.menuCategory.findMany({
       where: { companyId: Number(companyId), isArchived: false },
     });
