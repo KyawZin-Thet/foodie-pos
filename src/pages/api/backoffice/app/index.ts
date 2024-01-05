@@ -23,15 +23,15 @@ export default async function handler(
       const newCompanyStreet = "Hintada Street 21";
       const newCompanyTownship = "Sanchaung";
       const newCompanyCity = "Yangon";
-      const company = ""
-      // const company = await prisma.company.create({
-      //   data: {
-      //     name: newCompanyName,
-      //     street: newCompanyStreet,
-      //     township: newCompanyTownship,
-      //     city: newCompanyCity,
-      //   },
-      // });
+
+      const company = await prisma.company.create({
+        data: {
+          name: newCompanyName,
+          street: newCompanyStreet,
+          township: newCompanyTownship,
+          city: newCompanyCity,
+        },
+      });
       // 2. create new user
       await prisma.user.create({
         data: { name, email, companyId: 1 },
@@ -82,7 +82,7 @@ export default async function handler(
           street: newLocationStreet,
           township: newLocationTownship,
           city: newLocationCity,
-          companyId:1,
+          companyId: 1,
         },
       });
       // 9. create new table
@@ -113,7 +113,7 @@ export default async function handler(
       });
     } else {
       const companyId = dbUser.companyId;
-      const company =""
+      const company = "";
       // const company = await prisma.company.findFirst({
       //   where: { id: companyId },
       // });
