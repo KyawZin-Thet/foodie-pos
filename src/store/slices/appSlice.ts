@@ -3,7 +3,7 @@ import { config } from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { setAddonCategories } from "./addonCategorySlice";
 import { setAddons } from "./addonSlice";
-import { setCompany } from "./companySlice";
+// import { setCompany } from "./companySlice";
 import { setDisabledLocationMenuCategories } from "./disabledLocationMenucategorySlice";
 import { setDisabledLocationMenus } from "./disabledLocationMenuSlice";
 import { setLocations } from "./locationSlice";
@@ -59,7 +59,7 @@ export const fetchAppData = createAsyncThunk(
       );
       thunkApi.dispatch(setDisabledLocationMenus(disabledLocationMenus));
       thunkApi.dispatch(setOrders(orders));
-      thunkApi.dispatch(setCompany(company));
+      // thunkApi.dispatch(setCompany(company));
 
       thunkApi.dispatch(setAppLoading(false));
       onSuccess && onSuccess();

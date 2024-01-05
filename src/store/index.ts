@@ -3,7 +3,7 @@ import addonCategoryReducer from "./slices/addonCategorySlice";
 import addonReducer from "./slices/addonSlice";
 import appReducer from "./slices/appSlice";
 import cartReducer from "./slices/cartSlice";
-import companyReducer from "./slices/companySlice";
+// import companyReducer from "./slices/companySlice";
 import disabledLocationMenuCategoryReducer from "./slices/disabledLocationMenucategorySlice";
 import disabledLocationMenuReducer from "./slices/disabledLocationMenuSlice";
 import locationReducer from "./slices/locationSlice";
@@ -28,7 +28,7 @@ export const store = configureStore({
     snackBar: snackBarReducer,
     disabledLocationMenuCategory: disabledLocationMenuCategoryReducer,
     disabledLocationMenu: disabledLocationMenuReducer,
-    company: companyReducer,
+    // company: companyReducer,
     cart: cartReducer,
     order: orderReducer,
   },
