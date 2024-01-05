@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Testimonials from "@/components/Testimonials";
 import { Box } from "@mui/material";
-import Features from "../components/Features";
 
 const FoodiePOS = () => {
   return (
@@ -26,7 +25,7 @@ const FoodiePOS = () => {
         }}
       >
         <Hero />
-        <Features />
+        {/* <Features /> */}
         <Testimonials />
       </Box>
       <Footer />
