@@ -44,6 +44,7 @@ const Testimonials = () => {
                 width: 300,
                 height: 180,
                 p: 2,
+                mx: 3,
                 mb: 3,
                 borderRadius: 3,
                 position: "relative",
