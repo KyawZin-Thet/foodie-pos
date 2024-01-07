@@ -113,7 +113,7 @@ export default async function handler(
         orders: [],
       });
     } else {
-      const companyId = dbUser.companyId;
+      const companyId = 1;
       const company = "";
       // const company = await prisma.company.findFirst({
       //   where: { id: companyId },
